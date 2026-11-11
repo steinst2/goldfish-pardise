@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goldfish Paradise — Ecosystem Lab</title>
+<meta name="description" content="A free, browser-based ecosystem laboratory for high-school biology: nutrient cycling, oxygen, carbon, energy flow, aquaponics and real water-quality data.">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='17' cy='16' rx='10' ry='6' fill='%23f08a24'/%3E%3Cpath d='M8 16 L2 11 L2 21Z' fill='%23e06a10'/%3E%3C/svg%3E">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+<header class="site-head">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 40 28" aria-hidden="true"><ellipse cx="22" cy="14" rx="13" ry="8" fill="#f08a24"/><path d="M10 14 L1 7 L1 21Z" fill="#e06a10"/><circle cx="29" cy="12" r="1.8" fill="#1b1b1b"/></svg>
+    <div>
+      <h1>Goldfish Paradise <span>Ecosystem Lab</span></h1>
+      <p class="tagline">Nutrient cycling · oxygen · carbon · energy · aquaponics · real water data</p>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-lab" aria-controls="view-lab" aria-selected="true">Lab</button>
+    <button role="tab" id="tab-inv" aria-controls="view-inv" aria-selected="false" tabindex="-1">Investigations</button>
+    <button role="tab" id="tab-data" aria-controls="view-data" aria-selected="false" tabindex="-1">Real Water Data</button>
+    <button role="tab" id="tab-science" aria-controls="view-science" aria-selected="false" tabindex="-1">Science &amp; Sources</button>
+    <button role="tab" id="tab-teacher" aria-controls="view-teacher" aria-selected="false" tabindex="-1">Teacher</button>
+  </nav>
+</header>
+
+<noscript><p class="msg msg-error">This lab needs JavaScript. Please enable it, or ask your teacher.</p></noscript>
+
+<main id="main">
+<!-- ============================== LAB ============================== -->
+<section id="view-lab" role="tabpanel" aria-labelledby="tab-lab" class="view">
+  <div class="lab-layout">
+    <form id="controls" class="controls" aria-label="Experiment settings">
+      <h2 class="panel-title">Experiment settings</h2>
+      <fieldset class="scenario-pick">
+        <legend>Ecosystem</legend>
+        <label class="scn"><input type="radio" name="scenario" value="A" checked> <span><strong>A · Unmanaged tank</strong><small>Fish are fed; nothing removes the nutrients.</small></span></label>
+        <label class="scn"><input type="radio" name="scenario" value="B"> <span><strong>B · Waste-to-Plate aquaponics</strong><small>Crops absorb nutrients; harvests remove them.</small></span></label>
+        <label class="scn"><input type="radio" name="scenario" value="compare"> <span><strong>Compare A and B</strong><small>Same fish, food, light and aeration in both.</small></span></label>
+      </fieldset>
+
+      <label class="ctl">Simulation length
+        <select name="days"><option value="30">30 days</option><option value="60">60 days</option><option value="90" selected>90 days</option><option value="180">180 days</option><option value="365">365 days</option></select>
+      </label>
+      <label class="ctl">Number of goldfish <output data-for="fishCount"></output>
+        <input type="range" name="fishCount" min="0" max="16" step="1" value="8">
+      </label>
+      <label class="ctl">Fish feeding <output data-for="feedPct"></output>
+        <input type="range" name="feedPct" min="0" max="3" step="0.25" value="1.5" aria-describedby="feed-help">
+        <small id="feed-help">Food per day as % of the starting fish mass. Food is the main nutrient input to a fish tank.</small>
+      </label>
+      <label class="ctl">Extra nutrient loading <output data-for="nutrientLevel"></output>
+        <input type="range" name="nutrientLevel" min="0" max="4" step="1" value="0" aria-describedby="nut-help">
+        <small id="nut-help">Nitrate + phosphate added every day, like fertilizer runoff.</small>
+      </label>
+      <label class="ctl">Light availability <output data-for="light"></output>
+        <input type="range" name="light" min="0" max="100" step="5" value="80">
+      </label>
+      <label class="ctl" id="crop-ctl">Crop planting density <output data-for="cropDensity"></output>
+        <input type="range" name="cropDensity" min="0" max="100" step="10" value="60" aria-describedby="crop-help">
+        <small id="crop-help">Share of the grow beds that is planted (Scenario B only).</small>
+      </label>
+      <fieldset class="ctl aeration">
+        <legend>Aeration</legend>
+        <label><input type="radio" name="aeration" value="none"> None</label>
+        <label><input type="radio" name="aeration" value="gentle" checked> Gentle (filter ripple)</label>
+        <label><input type="radio" name="aeration" value="strong"> Strong (air pump)</label>
+      </fieldset>
+      <details class="advanced">
+        <summary>More settings</summary>
+        <label class="ctl">Water temperature <output data-for="tempC"></output>
+          <input type="range" name="tempC" min="12" max="30" step="1" value="22"></label>
+        <label class="ctl">Hours of light per day <output data-for="photoperiodH"></output>
+          <input type="range" name="photoperiodH" min="6" max="18" step="1" value="14"></label>
+        <label class="ctl">Weekly water change <output data-for="waterChangePct"></output>
+          <input type="range" name="waterChangePct" min="0" max="50" step="5" value="0"></label>
+        <label class="ctl">Harvest every (Scenario B)
+          <select name="harvestEvery"><option value="0">Never</option><option value="7">7 days</option><option value="14" selected>14 days</option><option value="21">21 days</option><option value="28">28 days</option></select></label>
+        <label class="ctl">Fish low-oxygen stress threshold <output data-for="doStress"></output>
+          <input type="range" name="doStress" min="0.5" max="6" step="0.5" value="2" aria-describedby="do-help">
+          <small id="do-help">There is no single value for all fish. Goldfish tolerate low oxygen better than trout. You decide.</small></label>
+        <label class="ctl">Nitrifying bacteria at start
+          <select name="nitrMaturity"><option value="0.05">Brand-new tank (5 %)</option><option value="0.3">Young filter (30 %)</option><option value="0.7" selected>Established (70 %)</option></select></label>
+        <label class="ctl">pH (held constant) <output data-for="pH"></output>
+          <input type="range" name="pH" min="6.5" max="8.5" step="0.1" value="7.5"></label>
+      </details>
+      <div class="actions">
+        <button type="submit" class="btn primary" id="run">Run experiment</button>
+        <button type="button" class="btn" id="reset">Reset</button>
+        <button type="button" class="btn ghost" id="export">Export CSV</button>
+      </div>
+      <p class="muted small" id="run-time" aria-live="polite"></p>
+    </form>
+
+    <div class="results">
+      <div class="run-head">
+        <span id="run-kind" class="kind-badge kind-simulated">SIMULATED DATA</span>
+        <p id="run-kind-note" class="small"></p>
+      </div>
+      <div class="inspect">
+        <label for="inspect-day">Inspect a day</label>
+        <input type="range" id="inspect-day" min="0" max="90" value="90">
+        <output id="inspect-day-out" for="inspect-day">Day 90</output>
+      </div>
+      <div class="live">
+        <div id="tank" class="tank"></div>
+        <div id="metrics" class="metrics" aria-live="polite"></div>
+      </div>
+      <div id="charts" class="chart-grid"></div>
+
+      <section class="cycles">
+        <h2>Where did the matter and energy go?</h2>
+        <label class="small">Show cycles for <select id="cycle-scenario"></select></label>
+        <div class="cycle-grid">
+          <div id="n-diagram" class="diagram"></div>
+          <div id="c-diagram" class="diagram"></div>
+          <div id="energy" class="diagram"></div>
+        </div>
+        <div id="balance"></div>
+      </section>
+
+      <section class="quiz">
+        <h2>Knowledge check</h2>
+        <div id="quiz"></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== INVESTIGATIONS ============================== -->
+<section id="view-inv" role="tabpanel" aria-labelledby="tab-inv" class="view" hidden>
+  <div id="investigations" class="narrow"></div>
+</section>
+
+<!-- ============================== REAL DATA ============================== -->
+<section id="view-data" role="tabpanel" aria-labelledby="tab-data" class="view" hidden>
+  <div class="narrow">
+    <h2>Real water-quality observations</h2>
+    <p>This tab shows <span class="kind-badge kind-observed">OBSERVED DATA</span>: real measurements from named monitoring locations. They are always shown separately from <span class="kind-badge kind-simulated">SIMULATED DATA</span> and <span class="kind-badge kind-experiment">STUDENT EXPERIMENT</span> results.</p>
+    <div class="data-grid">
+      <section class="card">
+        <h3>1 · Classroom datasets</h3>
+        <div id="bundled"><p class="muted">Loading…</p></div>
+      </section>
+      <section class="card">
+        <h3>2 · Import a CSV</h3>
+        <div id="obs-drop" class="drop">
+          <label class="btn" for="obs-file">Choose a CSV file</label>
+          <input id="obs-file" type="file" accept=".csv,text/csv" class="sr-only">
+          <p class="small">…or drag it here. Accepts the classroom CSV from <code>scripts/fetch_wqp.py</code> or a Water Quality Portal “Sample Results” CSV. The file never leaves your computer.</p>
+        </div>
+      </section>
+    </div>
+    <div id="obs-messages"></div>
+    <div id="obs-view" hidden>
+      <section class="card"><h3>Where these numbers came from</h3><div id="obs-prov"></div></section>
+      <div class="obs-pick">
+        <label>Monitoring location <select id="obs-loc"></select></label>
+        <label>Characteristic <select id="obs-char"></select></label>
+      </div>
+      <div class="side-by-side">
+        <section class="chart-card obs-card"><div id="obs-chart"></div></section>
+        <section class="chart-card"><div id="sim-chart"></div></section>
+      </div>
+      <div id="compare-note"></div>
+      <div id="obs-table"></div>
+    </div>
+    <section class="card">
+      <h3>Candidate monitoring locations near Bay County, Michigan</h3>
+      <div id="candidates"></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============================== SCIENCE ============================== -->
+<section id="view-science" role="tabpanel" aria-labelledby="tab-science" class="view" hidden>
+  <article class="narrow prose">
+    <h2>How the model works</h2>
+    <p class="msg msg-warn"><strong>Honest label:</strong> this is a simplified <em>classroom</em> model. Its process equations are informed by published aquatic-ecosystem modelling (especially the US EPA AQUATOX technical documentation), but it is <strong>not</strong> AQUATOX, and most parameter values are illustrative teaching values, not measurements. It has been checked for internal consistency (it conserves matter) but has <strong>not</strong> been validated against a real aquarium. Do not use it to make animal-care decisions.</p>
+
+    <h3>What is in the tank</h3>
+    <p>Living pools (dry mass per litre): goldfish, algae, crop plants, decomposer bacteria, nitrifying bacteria. Non-living pools: detritus (dead matter, tracked as carbon, nitrogen and phosphorus), ammonium-N, nitrate-N, phosphate-P, dissolved oxygen, dissolved inorganic carbon. Each organism has a fixed proportion of C, N and P, so every process moves elements in exact amounts.</p>
+
+    <h3>Process equations (simplified)</h3>
+    <ul class="eq-list">
+      <li><strong>Producer growth</strong> (Monod + Liebig):
+        <code>growth = μ<sub>max</sub> × biomass × f<sub>light</sub> × min(f<sub>N</sub>, f<sub>P</sub>, f<sub>C</sub>) × θ<sup>T−20</sup></code>, with <code>f<sub>N</sub> = N/(K<sub>N</sub>+N)</code> and <code>f<sub>P</sub> = P/(K<sub>P</sub>+P)</code>. This structure matches AQUATOX 3.2 eqs. 52–56. Legović &amp; Cruzado (1997) combine Monod uptake with Droop growth on internal nutrient quotas; our version drops the internal quota. Half-saturation constants are illustrative.</li>
+      <li><strong>Light</strong>: a daily sine-shaped light curve; algae shade themselves (Beer–Lambert average over the water depth).</li>
+      <li><strong>Algal death</strong>: background mortality plus extra mortality when light and nutrients are poor, following the form of AQUATOX's stress term.</li>
+      <li><strong>Fish</strong>: eat food and graze algae → assimilate part → build tissue if N and P allow → respire the rest (CO₂ out, O₂ used) → excrete the extra N as ammonium and P as phosphate. Feces and uneaten food become detritus.</li>
+      <li><strong>Decomposition</strong>: bacteria consume detritus (faster with oxygen, half-saturation 0.5 mg O₂/L as in AQUATOX), grow with 30 % efficiency and release CO₂, ammonium and phosphate (<em>mineralization</em>).</li>
+      <li><strong>Nitrification</strong>: NH₄⁺ + 2 O₂ → NO₃⁻ … uses 4.57 g O₂ per g N. It <em>transforms</em> nitrogen — it does not remove it.</li>
+      <li><strong>Denitrification</strong>: NO₃⁻ → N₂ gas, needs low oxygen and organic carbon. This <em>does</em> remove nitrogen from the water.</li>
+      <li><strong>Oxygen</strong>: <code>dO₂/dt = photosynthesis + reaeration − respiration − decomposition − nitrification</code>; reaeration = <code>K<sub>reaer</sub> × 1.024<sup>T−20</sup> × (O₂<sub>sat</sub> − O₂)</code> (AQUATOX 3.2 eqs. 191, 198). O₂<sub>sat</sub> uses the Benson &amp; Krause equation adopted by USGS.</li>
+      <li><strong>Un-ionized ammonia</strong>: fraction NH₃ = 1/(1+10<sup>pKa−pH</sup>), pKa = 0.09018 + 2729.92/T (Emerson et al. 1975).</li>
+      <li><strong>Crops</strong>: roots take nitrogen and phosphate from the water; leaves take CO₂ from <em>and release O₂ to</em> the air. Growth is limited by grow-bed space; harvests remove crops and their nutrients.</li>
+    </ul>
+
+    <h3>Carbon cycling vs. energy flow</h3>
+    <p>Carbon atoms <strong>cycle</strong>: CO₂ → algae (photosynthesis) → fish or detritus → CO₂ (respiration, decomposition) → algae again. Energy <strong>flows</strong>: it enters as light (and as the chemical energy in fish food bought from outside), is passed along when organisms eat, and at every step most of it is released as heat by respiration. Heat cannot be used again by organisms, so energy must keep entering. The model tracks the two separately: grams of N, P and C in the mass balance, and kilojoules in the energy budget.</p>
+    <p>The <strong>~10 % rule</strong> summarizes real food webs: on average about 10 % of the energy at one trophic level becomes biomass at the next (Lindeman 1942; Pauly &amp; Christensen 1995 estimated a mean near 10 % for aquatic food webs). Real values vary widely. The model does not force 10 % — the fish's efficiency emerges from its digestion and respiration settings, so students can test the rule.</p>
+
+    <h3>What is simplified or left out (compared with AQUATOX)</h3>
+    <ul>
+      <li>Fixed elemental composition of organisms (no Droop internal nutrient quotas).</li>
+      <li>One algae group and one fish species; no zooplankton, invertebrates or macrophytes.</li>
+      <li>Constant temperature and pH; pH does not respond to CO₂. Carbonate chemistry is reduced to one inorganic-carbon pool.</li>
+      <li>No sediment layer or sediment diagenesis; no phosphorus binding to sediments.</li>
+      <li>Well-mixed water; no stratification, flow, inflow or outflow (except optional water changes).</li>
+      <li>Fish mortality from low oxygen and un-ionized ammonia uses simple illustrative stress thresholds, not AQUATOX's time-to-death toxicity relationships. Real tolerance differs by species, size and acclimation.</li>
+      <li>No toxic chemicals, pathogens, disease or fish reproduction.</li>
+    </ul>
+
+    <h3>NGSS alignment</h3>
+    <div id="ngss-map"></div>
+
+    <h3>Sources</h3>
+    <ol class="sources">
+      <li>US EPA. <a href="https://www.epa.gov/hydrowq/what-does-aquatox-do" target="_blank" rel="noopener noreferrer">What does AQUATOX do?</a></li>
+      <li>Park, R.A. &amp; Clough, J.S. (2018). <a href="https://www.epa.gov/sites/default/files/2018-09/documents/aquatox_tech_doc_3.2.pdf" target="_blank" rel="noopener noreferrer">AQUATOX (Release 3.2) Volume 2: Technical Documentation</a>. EPA/600/B-18/241. US EPA. (Release 3.1 documents: <a href="https://www.epa.gov/hydrowq/aquatox-31-supporting-documents" target="_blank" rel="noopener noreferrer">AQUATOX 3.1 supporting documents</a>.)</li>
+      <li>Legović, T. &amp; Cruzado, A. (1997). A model of phytoplankton growth on multiple nutrients based on the Michaelis-Menten-Monod uptake, Droop's growth and Liebig's law. <em>Ecological Modelling</em> 99: 19–31. <a href="https://doi.org/10.1016/S0304-3800(96)01919-9" target="_blank" rel="noopener noreferrer">doi:10.1016/S0304-3800(96)01919-9</a></li>
+      <li>US EPA CADDIS. <a href="https://www.epa.gov/caddis/dissolved-oxygen" target="_blank" rel="noopener noreferrer">Dissolved Oxygen</a> (CADDIS Volume 2: Sources, Stressors and Responses; EPA now marks this volume as retired).</li>
+      <li>US Geological Survey (2011). <a href="https://water.usgs.gov/water-resources/memos/documents/WQ.2011.03.pdf" target="_blank" rel="noopener noreferrer">Change to solubility equations for oxygen in water</a>. Office of Water Quality Technical Memorandum 2011.03 (Benson &amp; Krause 1980, 1984).</li>
+      <li>Emerson, K., Russo, R.C., Lund, R.E. &amp; Thurston, R.V. (1975). Aqueous ammonia equilibrium calculations: effect of pH and temperature. <em>J. Fisheries Research Board of Canada</em> 32: 2379–2383.</li>
+      <li>Pauly, D. &amp; Christensen, V. (1995). Primary production required to sustain global fisheries. <em>Nature</em> 374: 255–257. <a href="https://doi.org/10.1038/374255a0" target="_blank" rel="noopener noreferrer">doi:10.1038/374255a0</a></li>
+      <li>Lindeman, R.L. (1942). The trophic-dynamic aspect of ecology. <em>Ecology</em> 23: 399–417.</li>
+      <li>Sterner, R.W. &amp; Elser, J.J. (2002). <em>Ecological Stoichiometry</em>. Princeton University Press. (Algal N and P fractions as tabulated in AQUATOX 3.2, Table 13.)</li>
+      <li><a href="https://www.waterqualitydata.us/" target="_blank" rel="noopener noreferrer">Water Quality Portal</a> (USGS, US EPA and National Water Quality Monitoring Council) · <a href="https://www.waterqualitydata.us/webservices_documentation/" target="_blank" rel="noopener noreferrer">web services documentation</a></li>
+      <li><a href="https://api.waterdata.usgs.gov/" target="_blank" rel="noopener noreferrer">USGS Water Data APIs</a> · <a href="https://api.waterdata.usgs.gov/docs/" target="_blank" rel="noopener noreferrer">documentation</a> · <a href="https://waterdata.usgs.gov/blog/api-waterservices-decom" target="_blank" rel="noopener noreferrer">legacy WaterServices decommissioning notice</a></li>
+      <li>US EPA. <a href="https://www.epa.gov/waterdata/epa-nitrogen-and-phosphorus-pollution-data-access-tool" target="_blank" rel="noopener noreferrer">Nitrogen and Phosphorus Pollution Data Access Tool</a> and <a href="https://www.epa.gov/nutrientpollution/nutrient-data" target="_blank" rel="noopener noreferrer">Nutrient Data</a></li>
+    </ol>
+    <p class="small">Full documentation: <a href="docs/view.html?doc=MODEL_CARD.md">Model card</a> · <a href="docs/view.html?doc=VALIDATION.md">Validation</a> · <a href="docs/view.html?doc=SCIENTIFIC_SOURCES.md">Scientific sources</a> · <a href="docs/view.html?doc=DATA_DICTIONARY.md">Data dictionary</a></p>
+  </article>
+</section>
+
+<!-- ============================== TEACHER ============================== -->
+<section id="view-teacher" role="tabpanel" aria-labelledby="tab-teacher" class="view" hidden>
+  <article class="narrow prose">
+    <h2>For teachers</h2>
+    <p>Everything runs in the student's browser. There are no accounts, cookies, servers or API calls in the simulation. Student answers stay on the student's own device unless they download a report.</p>
+    <h3>Preparing real data (optional, done once by the teacher)</h3>
+    <ol>
+      <li>On a computer with Python 3.9 or newer (no extra packages needed), run<br><code>python scripts/fetch_wqp.py list-sites --county "US:26:017"</code><br>to list Bay County, Michigan monitoring locations and the characteristics measured at each.</li>
+      <li>Pick a location, then download observations:<br><code>python scripts/fetch_wqp.py download --site USGS-04157065 --start 2005-01-01 --end 2013-12-31</code></li>
+      <li>The script writes a classroom CSV and a provenance JSON to <code>data/datasets/</code> and adds them to <code>data/datasets/index.json</code>. Run <code>python scripts/validate_data.py</code>, then commit and push. Students will see the dataset in the Real Water Data tab.</li>
+    </ol>
+    <p class="small">The legacy Water Quality Portal profiles do not include USGS data added after March 11, 2024. Newer USGS discrete data are in the portal's WQX 3.0 profiles (use <code>--profile wqx3</code>) and in the USGS Samples API; continuous sensor data and daily values come from the modern USGS Water Data APIs (<code>scripts/fetch_usgs.py</code>). The legacy USGS WaterServices APIs are scheduled for decommissioning in early 2027, so this project does not use them.</p>
+    <h3>Classroom tips</h3>
+    <ul>
+      <li>Ask students to <strong>predict</strong> before pressing Run. The Investigations tab has a prediction box for each investigation.</li>
+      <li>The grey baseline line lets students see the effect of their change compared with the default run.</li>
+      <li>Everything can be done with a keyboard: Tab between controls, arrow keys move sliders and read chart values.</li>
+      <li>The Chromebook-friendly design avoids animation: a 90-day run takes well under a second.</li>
+    </ul>
+    <p>See the full <a href="docs/view.html?doc=TEACHER_GUIDE.md">Teacher guide</a> and <a href="docs/view.html?doc=STUDENT_GUIDE.md">Student investigation guide</a>.</p>
+  </article>
+</section>
+</main>
+<footer class="site-foot">
+  <p>Goldfish Paradise Ecosystem Lab · a simplified classroom model informed by published aquatic-ecosystem research · <a href="docs/view.html?doc=MODEL_CARD.md">model card</a> · MIT licence</p>
+</footer>
+</body>
+</html>

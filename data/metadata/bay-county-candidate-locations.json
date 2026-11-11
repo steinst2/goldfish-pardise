@@ -1,0 +1,64 @@
+{
+  "note": "Monitoring locations in Bay County, Michigan (state FIPS 26, county FIPS 017) found on the Water Quality Portal and USGS monitoring-location pages on 2026-11-10. These are location METADATA only - no observation values. Which characteristics have usable results, and for which years, must be confirmed with scripts/fetch_wqp.py list-sites before teaching. Group-level periods of record below were read from each site's Water Quality Portal page and may contain gap years.",
+  "checked_utc": "2026-11-10",
+  "locations": [
+    {
+      "id": "USGS-04157065",
+      "name": "Saginaw River at Weadock Road at Essexville, MI",
+      "organization": "USGS Michigan Water Science Center (USGS-MI)",
+      "provider": "NWIS",
+      "latitude": 43.62807796,
+      "longitude": -83.8366418,
+      "huc8": "04080206",
+      "availability": "WQP site page lists Nutrient and Physical characteristic groups, 1998-2013 (legacy WQX 2.2 profile; may contain gap years)",
+      "source_url": "https://waterqualitydata.us/provider/NWIS/USGS-MI/USGS-04157065"
+    },
+    {
+      "id": "21MICH-090177",
+      "name": "Saginaw River at Main St - Essexville; Bangor Township Sec 14",
+      "organization": "Michigan Department of Environmental Quality (21MICH)",
+      "provider": "STORET",
+      "latitude": 43.617505,
+      "longitude": -83.842781,
+      "huc8": "04080206",
+      "availability": "WQP site page lists Nutrient and Physical characteristic groups, 1998-2005 (may contain gap years)",
+      "source_url": "https://waterqualitydata.us/provider/STORET/21MICH/21MICH-090177"
+    },
+    {
+      "id": "21MICH_WRD-090250",
+      "name": "Saginaw Bay about 8 mile east of Pinconning River",
+      "organization": "Michigan EGLE - Water Resources Division (21MICH_WRD)",
+      "provider": "STORET",
+      "latitude": 43.838059,
+      "longitude": -83.792781,
+      "huc8": "04080300",
+      "availability": "Lake site; available characteristics not yet checked",
+      "source_url": "https://www.waterqualitydata.us/provider/STORET/21MICH_WRD/21MICH_WRD-090250/"
+    },
+    {
+      "id": "USGS-04157061",
+      "name": "Saginaw River at Bay City, MI",
+      "organization": "USGS Michigan Water Science Center",
+      "provider": "NWIS",
+      "availability": "Listed among USGS monitoring locations in Bay County; available characteristics not yet checked",
+      "source_url": "https://waterdata.usgs.gov/monitoring-location/country/US/state/26/county/017"
+    },
+    {
+      "id": "USGS-04157070",
+      "name": "Saginaw River at Mouth near Alpine Beach, MI",
+      "organization": "USGS Michigan Water Science Center",
+      "provider": "NWIS",
+      "availability": "Listed among USGS monitoring locations in Bay County; available characteristics not yet checked",
+      "source_url": "https://waterdata.usgs.gov/monitoring-location/country/US/state/26/county/017"
+    },
+    {
+      "id": "USGS-04143600",
+      "name": "Kawkawlin River at State Park Dr at Bay City, MI",
+      "organization": "USGS Michigan Water Science Center",
+      "provider": "NWIS",
+      "availability": "Listed among USGS monitoring locations in Bay County; available characteristics not yet checked",
+      "source_url": "https://waterdata.usgs.gov/monitoring-location/country/US/state/26/county/017"
+    }
+  ],
+  "nearby_alternatives": "If a Bay County site lacks a needed characteristic, check upstream Saginaw River sites in Saginaw County (e.g. USGS-04157005, Saginaw River at Holland Avenue at Saginaw, MI, listed on the WQP) or Saginaw Bay Monitoring Consortium tributary sites (Saginaw Valley State University, sampling began summer 2023) - confirm their availability in the Water Quality Portal first."
+}

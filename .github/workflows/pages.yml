@@ -1,0 +1,57 @@
+# Test the model and data, then publish the site to GitHub Pages on every push to main.
+name: Test and deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Model and importer tests (Node, no dependencies)
+        run: node --test tests/*.test.mjs
+      - name: Teacher-script tests (Python standard library only)
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+      - name: Validate published datasets
+        run: python scripts/validate_data.py
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble the static site (only what students need)
+        run: |
+          mkdir -p _site
+          cp index.html styles.css app.js LICENSE _site/
+          cp -r src data docs _site/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

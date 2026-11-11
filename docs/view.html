@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goldfish Paradise — documentation</title>
+<link rel="stylesheet" href="../styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='17' cy='16' rx='10' ry='6' fill='%23f08a24'/%3E%3C/svg%3E">
+<style>
+  .doc { max-width: 920px; margin: 0 auto; padding: 1rem 1.25rem 3rem; line-height: 1.6; }
+  .doc table { border-collapse: collapse; width: 100%; font-size: .88rem; margin: .75rem 0; display: block; overflow-x: auto; }
+  .doc th, .doc td { border: 1px solid var(--line); padding: .3rem .5rem; text-align: left; vertical-align: top; }
+  .doc th { background: var(--teal-wash); }
+  .doc pre { background: var(--teal-wash); padding: .75rem; border-radius: 8px; overflow-x: auto; }
+  .doc pre code { background: none; padding: 0; }
+  .doc h1 { color: var(--teal); }
+  .docnav { display: flex; flex-wrap: wrap; gap: .75rem; font-size: .9rem; }
+</style>
+</head>
+<body>
+<header class="site-head" style="padding-bottom:.75rem">
+  <div class="brand"><div><h1>Goldfish Paradise <span>Documentation</span></h1>
+  <nav class="docnav" aria-label="Documents">
+    <a style="color:#fff" href="../index.html">← Back to the lab</a>
+    <a style="color:#fff" href="?doc=MODEL_CARD.md">Model card</a>
+    <a style="color:#fff" href="?doc=VALIDATION.md">Validation</a>
+    <a style="color:#fff" href="?doc=SCIENTIFIC_SOURCES.md">Sources</a>
+    <a style="color:#fff" href="?doc=DATA_DICTIONARY.md">Data dictionary</a>
+    <a style="color:#fff" href="?doc=TEACHER_GUIDE.md">Teacher guide</a>
+    <a style="color:#fff" href="?doc=STUDENT_GUIDE.md">Student guide</a>
+    <a style="color:#fff" href="?doc=NGSS_ALIGNMENT.md">NGSS</a>
+  </nav></div></div>
+</header>
+<main id="doc" class="doc"><p>Loading…</p></main>
+<script type="module">
+// Minimal, dependency-free Markdown renderer for this project's own documentation files.
+const ALLOWED = ['MODEL_CARD.md', 'VALIDATION.md', 'SCIENTIFIC_SOURCES.md', 'DATA_DICTIONARY.md', 'TEACHER_GUIDE.md', 'STUDENT_GUIDE.md', 'NGSS_ALIGNMENT.md', 'TECHNICAL_ASSESSMENT.md'];
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function inline(s) {
+  const codes = [];
+  s = s.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
+  s = esc(s);
+  s = s.replace(/&lt;(https?:\/\/[^\s&]+)&gt;/g, (_, u) => `<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
+  s = s.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, u) => {
+    const ext = /^https?:/.test(u);
+    const href = !ext && /\.md(#.*)?$/.test(u) ? `?doc=${u.replace(/^\.\/|^docs\//, '')}` : (!ext && /^\.\.\//.test(u) ? u : u);
+    return `<a href="${href}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''}>${t}</a>`;
+  });
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>').replace(/(^|[\s(])_([^_\s][^_]*)_(?=[\s.,;:)]|$)/g, '$1<em>$2</em>');
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${esc(codes[+i])}</code>`);
+}
+function render(md) {
+  const lines = md.replace(/\r/g, '').split('\n');
+  let html = '', i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) { let code = ''; i++; while (i < lines.length && !/^```/.test(lines[i])) code += lines[i++] + '\n'; i++; html += `<pre><code>${esc(code)}</code></pre>`; continue; }
+    const h = /^(#{1,4})\s+(.*)$/.exec(l);
+    if (h) { html += `<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`; i++; continue; }
+    if (/^\|/.test(l) && /^\|[\s:|-]+\|$/.test(lines[i + 1] || '')) {
+      const cells = (r) => r.replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+      html += '<table><thead><tr>' + cells(l).map((c) => `<th>${inline(c)}</th>`).join('') + '</tr></thead><tbody>';
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { html += '<tr>' + cells(lines[i]).map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>'; i++; }
+      html += '</tbody></table>'; continue;
+    }
+    if (/^\s*([*-]|\d+\.)\s+/.test(l)) {
+      const ordered = /^\s*\d+\./.test(l);
+      html += ordered ? '<ol>' : '<ul>';
+      while (i < lines.length && /^\s*([*-]|\d+\.)\s+/.test(lines[i])) {
+        let item = lines[i].replace(/^\s*([*-]|\d+\.)\s+/, ''); i++;
+        while (i < lines.length && /^\s{2,}\S/.test(lines[i]) && !/^\s*([*-]|\d+\.)\s+/.test(lines[i])) item += ' ' + lines[i++].trim();
+        html += `<li>${inline(item)}</li>`;
+      }
+      html += ordered ? '</ol>' : '</ul>'; continue;
+    }
+    if (!l.trim()) { i++; continue; }
+    let para = l; i++;
+    while (i < lines.length && lines[i].trim() && !/^(#|\||```|\s*([*-]|\d+\.)\s)/.test(lines[i])) para += ' ' + lines[i++];
+    html += `<p>${inline(para)}</p>`;
+  }
+  return html;
+}
+const name = new URLSearchParams(location.search).get('doc') || 'MODEL_CARD.md';
+const box = document.getElementById('doc');
+if (!ALLOWED.includes(name)) box.innerHTML = '<p>Unknown document.</p>';
+else fetch(name).then((r) => { if (!r.ok) throw new Error(r.status); return r.text(); })
+  .then((t) => { box.innerHTML = render(t); document.title = (box.querySelector('h1')?.textContent || name) + ' — Goldfish Paradise'; })
+  .catch((e) => { box.innerHTML = `<p>Could not load ${esc(name)} (${esc(String(e.message))}). If you opened the app from a file, use the published site or run a local web server.</p>`; });
+</script>
+</body>
+</html>

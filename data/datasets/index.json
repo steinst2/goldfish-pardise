@@ -1,0 +1,4 @@
+{
+  "note": "Classroom datasets of REAL observations. Entries are added by scripts/fetch_wqp.py or scripts/fetch_usgs.py, which also write a provenance JSON next to each CSV. This list is intentionally empty until a teacher downloads verified data: no observation values are invented or bundled without provenance.",
+  "datasets": []
+}

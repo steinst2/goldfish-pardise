@@ -1,0 +1,7 @@
+{
+  "name": "goldfish-paradise-ecosystem-lab",
+  "private": true,
+  "type": "module",
+  "description": "Development-only file: lets maintainers run the automated tests with Node (node --test). Students and the website do not need Node.",
+  "scripts": { "test": "node --test tests/*.test.mjs" }
+}

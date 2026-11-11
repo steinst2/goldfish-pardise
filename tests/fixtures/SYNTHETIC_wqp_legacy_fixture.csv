@@ -1,0 +1,10 @@
+OrganizationIdentifier,ActivityStartDate,ActivityStartTime/Time,MonitoringLocationIdentifier,MonitoringLocationName,ResultDetectionConditionText,CharacteristicName,ResultSampleFractionText,ResultMeasureValue,ResultMeasure/MeasureUnitCode,MeasureQualifierCode,ResultStatusIdentifier,ResultValueTypeName,USGSPCode,ProviderName
+TEST-ORG,2010-05-04,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Dissolved oxygen (DO),Dissolved,8.1,mg/l,,Accepted,Actual,00300,TEST
+TEST-ORG,2010-06-08,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Dissolved oxygen (DO),Dissolved,6.4,mg/l,,Accepted,Actual,00300,TEST
+TEST-ORG,2010-05-04,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Nitrate,Dissolved,4.43,mg/l asNO3,,Accepted,Actual,71851,TEST
+TEST-ORG,2010-05-04,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Inorganic nitrogen (nitrate and nitrite),Dissolved,1.00,mg/l as N,,Accepted,Actual,00631,TEST
+TEST-ORG,2010-05-04,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Phosphorus,Total,0.12,mg/l as P,,Accepted,Actual,00665,TEST
+TEST-ORG,2010-05-04,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Orthophosphate,Dissolved,0.03,mg/l,,Accepted,Actual,,TEST
+TEST-ORG,2010-06-08,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",Not Detected,Ammonia and ammonium,Dissolved,,mg/l as N,,Accepted,Actual,00608,TEST
+TEST-ORG,2010-06-08,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,"Temperature, water",,21.5,deg C,,Accepted,Actual,00010,TEST
+TEST-ORG,2010-06-08,10:30:00,TEST-0000,"SYNTHETIC TEST FIXTURE - NOT REAL DATA",,Chlorophyll a,,12.0,ug/l,,Accepted,Actual,,TEST
