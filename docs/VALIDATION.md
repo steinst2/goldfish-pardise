@@ -8,7 +8,7 @@ This report keeps two very different things apart:
 Reproduce everything here with:
 
 ```bash
-node --test tests/*.test.mjs                             # 28 JavaScript tests (model + CSV importer)
+node --test tests/*.test.mjs                             # 31 JavaScript tests (model, CSV importer, teacher-key guard)
 python -m unittest discover -s tests -p "test_*.py"     # 8 Python tests (teacher scripts)
 node tests/verification-report.mjs                      # prints the numbers quoted below
 ```

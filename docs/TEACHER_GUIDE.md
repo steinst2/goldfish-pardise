@@ -4,7 +4,23 @@
 
 A web browser and the class link (your GitHub Pages URL). Nothing else: no accounts, installs, extensions, Python or Node. The app works on school Chromebooks, uses no cookies, and keeps student writing on the student's own device until they download a report.
 
-## Suggested sequence (five to seven 50-minute periods)
+## Basic mode and the paper worksheet (9th grade)
+
+The lab opens in **Basic** mode. Students choose the tank (fish tank / with plants / both), number of fish, food (a little / normal / a lot), light (low / medium / high) and air pump (off / on). They read four traffic-light cards (Fish, Oxygen, Toxic ammonia, Water), a "What happened?" day-by-day story, and four charts.
+
+Print **`docs/lab-worksheet.pdf`** (5 pages, black-and-white friendly). It follows the three Missions in the Missions tab:
+
+| Mission | Time | Standard | Students… |
+|---|---|---|---|
+| 1 Keep the fish alive | 1 period | HS-LS2-1 | change one variable at a time; find which changes save the fish (air pump, low light, very few fish) |
+| 2 Why did the fish die? | ½ period | HS-LS2-1, -4 | record event days from the story; order the cause-and-effect chain; explain day/night oxygen |
+| 3 Waste to Plate | 1 period | HS-LS2-7, -5 | compare a plain tank with an aquaponics tank in 3 runs; write a CER |
+
+The answer key with the model's actual results is **`teacher/lab-worksheet-teacher-key.pdf`** in the repository. It is not published on the website. Note that a public GitHub repository is visible to anyone, so students *could* find it there. To change the worksheet wording, edit `scripts/make_worksheet.py` and run it (`pip install reportlab` first).
+
+Switch to **Advanced** (top right) for honors or dual-enrollment students, or link them straight to it with `?mode=advanced` after the site URL.
+
+## Suggested sequence for Advanced mode (five to seven 50-minute periods)
 
 | Day | Activity | Standard |
 |---|---|---|

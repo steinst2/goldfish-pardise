@@ -2,11 +2,13 @@
 import { QUIZ } from './content.js';
 import { esc } from './investigations.js';
 
-export function renderQuiz(root) {
-  root.innerHTML = QUIZ.map((item, i) => `
-    <fieldset class="quiz-item" data-q="${i}">
-      <legend>${i + 1}. ${esc(item.q)}</legend>
-      ${item.choices.map((c, j) => `<label class="quiz-choice"><input type="radio" name="q${i}" value="${j}"> ${esc(c)}</label>`).join('')}
+export function renderQuiz(root, { basic = false } = {}) {
+  const items = QUIZ.map((item, i) => ({ ...item, i })).filter((it) => !basic || it.basic);
+  const pfx = root.id || 'quiz';
+  root.innerHTML = items.map((item, n) => `
+    <fieldset class="quiz-item" data-q="${item.i}">
+      <legend>${n + 1}. ${esc(item.q)}</legend>
+      ${item.choices.map((c, j) => `<label class="quiz-choice"><input type="radio" name="${pfx}-q${item.i}" value="${j}"> ${esc(c)}</label>`).join('')}
       <p class="quiz-feedback" aria-live="polite"></p>
     </fieldset>`).join('') + '<p class="quiz-score" aria-live="polite"></p>';
   const answered = new Map();
@@ -21,7 +23,7 @@ export function renderQuiz(root) {
       fb.className = 'quiz-feedback ' + (correct ? 'ok' : 'no');
       fb.innerHTML = `${correct ? '✓ Correct.' : `✗ Not quite — the best answer is “${esc(item.choices[item.answer])}”.`} ${esc(item.why)}`;
       const score = [...answered.values()].filter(Boolean).length;
-      root.querySelector('.quiz-score').textContent = `Score so far: ${score} of ${answered.size} answered (${QUIZ.length} questions).`;
+      root.querySelector('.quiz-score').textContent = `Score so far: ${score} of ${answered.size} answered (${items.length} questions).`;
     });
   });
 }

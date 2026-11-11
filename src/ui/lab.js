@@ -53,6 +53,19 @@ export function settingsToParams(st, scenarioId) {
   return unmanagedTankParameters(extra);
 }
 
+/**
+ * Estimated number of fish still alive on day i. The model tracks fish as total biomass, so the
+ * count is estimated from the share of fish biomass that has died:  alive ≈ N × living ÷ (living + dead).
+ */
+export function fishAlive(run, i) {
+  const d = run.days[i];
+  const n = run.params.fishCount;
+  if (!n) return 0;
+  const dead = d.acc.deathHypoxia + d.acc.deathAmmonia;
+  const total = d.fish + dead;
+  return total > 0 ? Math.max(0, Math.min(n, Math.round((n * d.fish) / total))) : 0;
+}
+
 /** Convert fish mg dry/L → grams wet mass in the whole system. */
 export const fishWetGrams = (mgDryPerL, V) => (mgDryPerL * V) / 1000 / FISH_DRY_FRACTION;
 const grams = (mgPerL, V) => (mgPerL * V) / 1000;
@@ -62,12 +75,13 @@ function sameSettings(a, b) {
 }
 
 /** Run the scenario(s) for the current settings and their baselines. */
-export function runExperiment(st) {
+export function runExperiment(st, opts = {}) {
   const ids = st.scenario === 'compare' ? ['A', 'B'] : [st.scenario];
   const out = { settings: { ...st }, runs: {}, baselines: {}, kind: 'SIMULATED' };
   for (const id of ids) {
     const p = settingsToParams(st, id);
     out.runs[id] = simulate(p, +st.days, { scenario: id });
+    if (opts.baseline === false) { if (opts.changed) out.kind = 'EXPERIMENT'; continue; }
     const base = defaultsFor(st.scenario === 'compare' ? 'A' : id);
     base.days = st.days;
     if (st.scenario === 'compare') base.aeration = st.aeration; // compare baseline keeps the chosen aeration
@@ -334,7 +348,7 @@ export class LabView {
 }
 
 /* ----------------------------------------------------------------- tank illustration */
-function tankSVG(run, i, id) {
+export function tankSVG(run, i, id, labelOverride) {
   const d = run.days[i];
   const p = run.params;
   const chl = d.chlEstimate;
@@ -342,8 +356,7 @@ function tankSVG(run, i, id) {
   const t = Math.max(0, Math.min(1, Math.log10(1 + chl) / 3));
   const mix = (a, b) => Math.round(a + (b - a) * t);
   const water = `rgb(${mix(170, 96)},${mix(214, 150)},${mix(235, 70)})`;
-  const startPer = run.days[0].fish / Math.max(1, p.fishCount);
-  const alive = startPer > 0 ? Math.min(p.fishCount, Math.round(d.fish / startPer)) : 0;
+  const alive = fishAlive(run, i);
   const shown = Math.min(12, Math.max(0, alive));
   let fish = '';
   for (let k = 0; k < shown; k++) {
@@ -359,7 +372,7 @@ function tankSVG(run, i, id) {
     return s;
   })() : '';
   const bubbles = p.aeration === 'strong' ? '<g fill="none" stroke="#ffffff" stroke-opacity=".8"><circle cx="24" cy="150" r="3"/><circle cx="27" cy="128" r="2.5"/><circle cx="22" cy="104" r="3.5"/><circle cx="26" cy="80" r="2"/><circle cx="23" cy="58" r="3"/></g>' : p.aeration === 'gentle' ? '<path d="M14,40 q10,-6 20,0" stroke="#fff" fill="none" stroke-opacity=".7"/>' : '';
-  const label = id === 'A' ? 'Scenario A — unmanaged tank' : 'Scenario B — aquaponics';
+  const label = labelOverride || (id === 'A' ? 'Scenario A — unmanaged tank' : 'Scenario B — aquaponics');
   return `<figure class="tank-fig"><svg viewBox="0 0 310 190" role="img" aria-label="${label} on day ${d.day}: about ${alive} of ${p.fishCount} fish alive; water ${chl > 50 ? 'green with algae' : chl > 10 ? 'slightly green' : 'clear'}.">
     <rect x="5" y="35" width="300" height="145" rx="6" fill="${water}" stroke="#5b6b73" stroke-width="3"/>
     <rect x="8" y="160" width="294" height="17" fill="#c8b48a"/>

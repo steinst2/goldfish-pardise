@@ -1,6 +1,16 @@
 # Student investigation guide
 
-## Getting started
+## Basic mode (start here)
+
+The lab opens in **Basic** mode. Your teacher will give you the paper worksheet.
+1. Click **Missions** and pick a mission. Press its button to set up the tank.
+2. Write your **prediction** on the worksheet, then press **Run**.
+3. Read the colored **status cards** (Fish, Oxygen, Toxic ammonia, Water), the **What happened?** list and the four charts. Move **Look at day** to see any day.
+4. Write your results on the worksheet.
+
+The rest of this guide is for **Advanced** mode (button at top right).
+
+## Getting started (Advanced)
 
 1. Open the link your teacher gave you. On the **Lab** tab, choose an ecosystem:
    **A** (an unmanaged fish tank), **B** (Waste-to-Plate aquaponics), or **Compare** (both at once with the same fish, food, light and aeration).

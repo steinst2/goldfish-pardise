@@ -5,15 +5,17 @@ A free, browser-based ecosystem laboratory for high-school biology. Students run
 * Runs entirely in the browser. It works on low-cost Chromebooks, with no installs, accounts, cookies, servers or paid APIs.
 * About 210 kB of HTML/CSS/JavaScript with **no external libraries or fonts**, so it keeps working when CDNs are blocked.
 * Hosted free on **GitHub Pages**. Teachers share one URL.
+* **Two levels.** **Basic** (default, built for 9th grade) has five choices, traffic-light status cards, four charts, a "What happened?" story and three missions that match a **printable PDF worksheet**. **Advanced** has every setting, eight charts, matter and energy diagrams, six investigations and a digital lab report.
 * Aligned to NGSS **HS-LS2-1, HS-LS2-4, HS-LS2-5, HS-LS2-7**, with an activity mapped to each one ([docs/NGSS_ALIGNMENT.md](docs/NGSS_ALIGNMENT.md)).
 
-> **Scientific honesty.** This is a simplified classroom model. Its process equations are *informed by* published aquatic-ecosystem modelling, especially the US EPA AQUATOX technical documentation, but it is **not** AQUATOX. Most parameter values are illustrative teaching values. The model is numerically verified (it conserves matter exactly; 36 automated tests) but **not empirically validated** against a real tank. Do not use it for animal-care decisions. See the [model card](docs/MODEL_CARD.md) and [validation report](docs/VALIDATION.md).
+> **Scientific honesty.** This is a simplified classroom model. Its process equations are *informed by* published aquatic-ecosystem modelling, especially the US EPA AQUATOX technical documentation, but it is **not** AQUATOX. Most parameter values are illustrative teaching values. The model is numerically verified (it conserves matter exactly; 39 automated tests) but **not empirically validated** against a real tank. Do not use it for animal-care decisions. See the [model card](docs/MODEL_CARD.md) and [validation report](docs/VALIDATION.md).
 
 ## What's inside
 
 | | |
 |---|---|
-| **Lab** | Scenario A (unmanaged tank), B (aquaponics) or both under identical conditions. Controls: duration, fish, feeding, extra nutrient loading, light, crop density, aeration, and more. Live metrics, a tank picture, 8 time-series charts with units (hover, keyboard and table views), nitrogen and carbon flow diagrams, an energy budget, a mass-balance check, a knowledge check, and CSV export |
+| **Lab (Basic)** | Tank, fish, food, light and air pump; status cards; a day-by-day story; 4 charts; quick check. Missions tab + `docs/lab-worksheet.pdf` |
+| **Lab (Advanced)** | Scenario A (unmanaged tank), B (aquaponics) or both under identical conditions. Controls: duration, fish, feeding, extra nutrient loading, light, crop density, aeration, and more. Live metrics, a tank picture, 8 time-series charts with units (hover, keyboard and table views), nitrogen and carbon flow diagrams, an energy budget, a mass-balance check, a knowledge check, and CSV export |
 | **Investigations** | 1 algal blooms · 2 why fish die · 3 can aquaponics help? · 4 where does the energy go? · 5 where does the matter go? · 6 real-world water quality. Each has a prediction, procedure, recorded results, evidence, explanation and reflection, plus a downloadable or printable lab report |
 | **Real Water Data** | Load teacher-prepared datasets or import a Water Quality Portal CSV. Shows provenance, quality flags and non-detects, and puts observations **side by side** with the model, never merged |
 | **Science & Sources** | Equations, simplifications compared with AQUATOX, carbon cycling vs. energy flow, NGSS map, citations |
@@ -55,12 +57,14 @@ src/model/        ecosystem.js (engine), organisms.js, nutrients.js, oxygen.js, 
 src/scenarios/    unmanaged-tank.js, aquaponics.js
 src/data/         import.js, validation.js, provenance.js       (browser CSV import, unit checks, provenance)
 src/visualization/charts.js (canvas charts), diagrams.js (SVG flow diagrams)
-src/ui/           lab.js, investigations.js, realdata.js, quiz.js, content.js (all student-facing text)
+src/ui/           basic.js (Basic mode), lab.js, investigations.js, realdata.js, quiz.js, content.js (all student-facing text)
 data/             datasets/ (classroom CSVs + provenance), metadata/, templates/
 scripts/          fetch_wqp.py, fetch_usgs.py, validate_data.py, gp_common.py   (teacher-side, Python stdlib)
+                  make_worksheet.py (rebuilds the worksheet PDFs; needs reportlab)
 tests/            model.test.mjs, import.test.mjs (Node), test_scripts.py (Python), fixtures/ (SYNTHETIC test inputs)
 docs/             MODEL_CARD, VALIDATION, SCIENTIFIC_SOURCES, DATA_DICTIONARY, TEACHER_GUIDE, STUDENT_GUIDE,
                   NGSS_ALIGNMENT, TECHNICAL_ASSESSMENT (review of the original), view.html (in-app doc viewer)
+teacher/          lab-worksheet-teacher-key.pdf (NOT published on the site)
 legacy-python/    the original Python project, unchanged
 .github/workflows/pages.yml   test → deploy to GitHub Pages
 ```
@@ -73,7 +77,7 @@ python -m unittest discover -s tests -p "test_*.py"
 node tests/verification-report.mjs                      # numbers used in docs/VALIDATION.md
 ```
 
-Student-facing wording (investigations, quiz, explanations) lives in `src/ui/content.js`. Every parameter, with its unit and source status, is in `src/model/parameters.js`.
+Student-facing wording (missions, investigations, quiz, explanations) lives in `src/ui/content.js`. The worksheet text is in `scripts/make_worksheet.py` (`pip install reportlab`, then `python scripts/make_worksheet.py`). `tests/basic.test.mjs` fails if a model change would make the teacher key wrong. Every parameter, with its unit and source status, is in `src/model/parameters.js`.
 
 ## Credits and licence
 

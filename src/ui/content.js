@@ -160,14 +160,14 @@ export const INVESTIGATIONS = [
 
 export const QUIZ = [
   // original four questions from the Python version (kept), plus new ones
-  { q: 'Which organisms are autotrophs (producers) in this simulation?', choices: ['Goldfish', 'Algae and crop plants', 'Decomposer bacteria', 'All consumers'], answer: 1, why: 'Algae and crops photosynthesize — they make their own food from CO₂ and light. Fish and decomposers are heterotrophs.' },
+  { basic: true, q: 'Which organisms are autotrophs (producers) in this simulation?', choices: ['Goldfish', 'Algae and crop plants', 'Decomposer bacteria', 'All consumers'], answer: 1, why: 'Algae and crops photosynthesize — they make their own food from CO₂ and light. Fish and decomposers are heterotrophs.' },
   { q: 'Which nutrients most commonly limit producer growth in fresh water?', choices: ['Nitrogen and phosphorus', 'Oxygen and helium', 'Sodium and iron only', 'Carbon monoxide and neon'], answer: 0, why: 'Nitrogen and phosphorus are the nutrients most often in short supply for algae and plants.' },
-  { q: 'Producers capture 1,000 kJ. About how much is passed to the next trophic level under the 10 % rule?', choices: ['1 kJ', '10 kJ', '100 kJ', '900 kJ'], answer: 2, why: 'About 10 % (100 kJ) becomes biomass at the next level; roughly 90 % is used for life processes and released as heat.' },
+  { basic: true, q: 'Producers capture 1,000 kJ. About how much is passed to the next trophic level under the 10 % rule?', choices: ['1 kJ', '10 kJ', '100 kJ', '900 kJ'], answer: 2, why: 'About 10 % (100 kJ) becomes biomass at the next level; roughly 90 % is used for life processes and released as heat.' },
   { q: 'Which statement correctly describes a carbon sink and a carbon source?', choices: ['A sink releases carbon; a source stores it', 'Both always remove CO₂', 'A sink takes up and stores more carbon than it releases; a source releases more than it takes up', 'Neither affects the carbon cycle'], answer: 2, why: 'Growing producers act as a sink (photosynthesis > respiration); decomposition and respiration make sources.' },
   { q: 'Nitrifying bacteria convert ammonium (NH₄⁺) into nitrate (NO₃⁻). What happens to the total amount of nitrogen in the water?', choices: ['It decreases — nitrification removes nitrogen', 'It stays the same — the nitrogen only changes form', 'It increases — bacteria make nitrogen', 'It turns into oxygen'], answer: 1, why: 'Nitrification is a transformation, not a removal. Nitrogen leaves only by denitrification (N₂ gas), harvest, or water changes.' },
-  { q: 'In the model, dissolved oxygen is usually lowest…', choices: ['at noon', 'just before dawn', 'right after feeding', 'it never changes'], answer: 1, why: 'All night, organisms respire but nothing photosynthesizes, so oxygen falls until the lights come on.' },
-  { q: 'Why can a large algal bloom lead to LOW oxygen even though algae make oxygen?', choices: ['Algae breathe nitrogen', 'When the algae die, decomposers use oxygen to break them down, and algae respire at night', 'Algae block the air pump', 'Oxygen is heavier than water'], answer: 1, why: 'Decomposition of dead algae and night-time respiration can use more oxygen than the algae produced.' },
-  { q: 'In aquaponics, crop leaves release the oxygen from photosynthesis…', choices: ['into the fish water', 'into the air', 'into the soil', 'nowhere — plants do not make oxygen'], answer: 1, why: 'Leaves are above the water. Crops remove nutrients from the water but do not add oxygen to it; their roots actually use some.' },
+  { basic: true, q: 'In the model, dissolved oxygen is usually lowest…', choices: ['at noon', 'just before dawn', 'right after feeding', 'it never changes'], answer: 1, why: 'All night, organisms respire but nothing photosynthesizes, so oxygen falls until the lights come on.' },
+  { basic: true, q: 'Why can a large algal bloom lead to LOW oxygen even though algae make oxygen?', choices: ['Algae breathe nitrogen', 'When the algae die, decomposers use oxygen to break them down, and algae respire at night', 'Algae block the air pump', 'Oxygen is heavier than water'], answer: 1, why: 'Decomposition of dead algae and night-time respiration can use more oxygen than the algae produced.' },
+  { basic: true, q: 'In aquaponics, crop leaves release the oxygen from photosynthesis…', choices: ['into the fish water', 'into the air', 'into the soil', 'nowhere — plants do not make oxygen'], answer: 1, why: 'Leaves are above the water. Crops remove nutrients from the water but do not add oxygen to it; their roots actually use some.' },
   { q: 'A river\'s nitrate values from the Water Quality Portal are lower than your model tank. What is the BEST conclusion?', choices: ['The model is wrong', 'The river data are wrong', 'A river and a fish tank are different systems with different inputs and flows, so they should not be expected to match', 'Nitrate does not exist in rivers'], answer: 2, why: 'Comparing them can be useful for scale and patterns, but the model is not calibrated to any river.' },
 ];
 
@@ -182,3 +182,40 @@ export const EXPLAIN = {
   oxygen: 'The line is the daily average; the shaded band is each day\'s lowest and highest value. Oxygen rises in daylight (photosynthesis) and falls at night (respiration). The red dashed line is the fish-stress threshold you set — real fish species differ widely.',
   carbon: 'Dissolved inorganic carbon (CO₂ + bicarbonate) versus carbon stored in living things and detritus. Photosynthesis moves carbon from the first pool into the second; respiration and decomposition move it back.',
 };
+
+/** Basic-mode missions (match the paper worksheet docs/lab-worksheet.pdf). */
+export const MISSIONS = [
+  {
+    id: 'm1', title: 'Mission 1: Keep the fish alive', pages: 'Worksheet pages 1–2', ngss: ['HS-LS2-1'],
+    goal: 'Eight goldfish live in this tank. With the starting settings, they do not survive. Find a way to keep all 8 alive for 60 days.',
+    setup: { scenario: 'A', fishCount: 8, food: 'normal', light: 'medium', pump: 'off', days: 60 },
+    steps: [
+      'Press "Load the starting tank". Write your prediction on the worksheet, then press Run.',
+      'Fill in Trial 1 on the worksheet: fish alive at the end, oxygen color, water color.',
+      'Change ONE thing (food, light, number of fish, or air pump). Run again and fill in the next trial.',
+      'Keep going until all 8 fish survive. Which change worked? Did more than one change work?',
+    ],
+  },
+  {
+    id: 'm2', title: 'Mission 2: Why did the fish die?', pages: 'Worksheet page 3', ngss: ['HS-LS2-1', 'HS-LS2-4'],
+    goal: 'Use the "What happened?" story and the oxygen chart to explain the chain of events that killed the fish.',
+    setup: { scenario: 'A', fishCount: 8, food: 'normal', light: 'medium', pump: 'off', days: 60 },
+    steps: [
+      'Press "Load the starting tank" and Run.',
+      'Read the "What happened?" list from top to bottom. Write the day of each event on the worksheet.',
+      'Look at the oxygen chart. Is oxygen lowest in the day or at night? Use "Look at day" to check the tank picture.',
+      'Number the boxes on the worksheet to put the cause-and-effect chain in order.',
+    ],
+  },
+  {
+    id: 'm3', title: 'Mission 3: Waste to Plate', pages: 'Worksheet pages 4–5', ngss: ['HS-LS2-7', 'HS-LS2-5'],
+    goal: 'Can plants grown on fish water clean up the fish waste AND grow food? Compare a plain fish tank with an aquaponics tank.',
+    setup: { scenario: 'compare', fishCount: 8, food: 'normal', light: 'medium', pump: 'on', days: 60 },
+    steps: [
+      'Press "Load the comparison" and Run. Both tanks get the same fish, food, light and air pump. Fill in Run 1 on the worksheet.',
+      'Run 2: change the food to "A lot" and Run. Fill in Run 2.',
+      'Run 3: keep "A lot" of food, turn the air pump Off, and Run. Fill in Run 3.',
+      'Write your claim, evidence and reasoning on the worksheet.',
+    ],
+  },
+];

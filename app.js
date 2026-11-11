@@ -7,7 +7,8 @@ import { LabView, runExperiment, defaultsFor, experimentCSV, download, NUTRIENT_
 import { Investigations } from './src/ui/investigations.js';
 import { RealDataView } from './src/ui/realdata.js';
 import { renderQuiz } from './src/ui/quiz.js';
-import { NGSS, NGSS_MAP } from './src/ui/content.js';
+import { NGSS, NGSS_MAP, MISSIONS } from './src/ui/content.js';
+import { BasicView, BASIC_DEFAULTS, basicToSettings, isBasicDefault } from './src/ui/basic.js';
 import { AERATION_PRESETS } from './src/model/oxygen.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -158,12 +159,80 @@ const inv = new Investigations($('#investigations'), {
 });
 inv.render();
 renderQuiz($('#quiz'));
+renderQuiz($('#basic-quiz'), { basic: true });
 
 $('#ngss-map').innerHTML = `<table class="records-table"><thead><tr><th scope="col">Standard</th><th scope="col">Where students do it in this app</th></tr></thead><tbody>${NGSS_MAP.map((r) => `<tr><th scope="row"><abbr title="${NGSS[r.std]}">${r.std}</abbr><br><small>${NGSS[r.std]}</small></th><td><ul>${r.activities.map((a) => `<li>${a}</li>`).join('')}</ul></td></tr>`).join('')}</tbody></table>`;
 
+/* ------------------------------------------------------------------ Basic mode */
+const bform = $('#basic-controls');
+const basic = new BasicView($('#view-lab'));
+basic.mount();
+
+function readBasic() {
+  const fd = new FormData(bform);
+  return { scenario: fd.get('scenario'), fishCount: +bform.elements.fishCount.value, food: fd.get('food'), light: fd.get('light'), pump: fd.get('pump'), days: +fd.get('days') };
+}
+function writeBasic(b) {
+  for (const [k, v] of Object.entries(b)) {
+    const el = bform.elements[k];
+    if (!el) continue;
+    if (el instanceof RadioNodeList) { for (const r of el) r.checked = r.value === String(v); } else el.value = String(v);
+  }
+  bform.querySelector('output[data-for=fishCount]').textContent = bform.elements.fishCount.value;
+}
+function runBasic() {
+  const b = readBasic();
+  const st = basicToSettings(b);
+  lastResult = runExperiment(st, { baseline: false, changed: !isBasicDefault(b) });
+  basic.render(lastResult);
+  writeSettings(st); // keep Advanced controls in step, so switching modes shows the same tank
+}
+bform.addEventListener('input', () => { bform.querySelector('output[data-for=fishCount]').textContent = bform.elements.fishCount.value; bform.elements.fishCount.setAttribute('aria-valuetext', bform.elements.fishCount.value + ' fish'); });
+bform.addEventListener('submit', (e) => { e.preventDefault(); runBasic(); });
+$('#basic-reset').addEventListener('click', () => { writeBasic(BASIC_DEFAULTS); runBasic(); });
+
+function renderMissions() {
+  const box = $('#missions');
+  box.innerHTML = `<h2>Missions</h2>
+    <p>Work through these with the <a href="docs/lab-worksheet.pdf" target="_blank" rel="noopener">paper lab worksheet (PDF)</a>. Write your predictions and answers on the worksheet.</p>` +
+    MISSIONS.map((m) => `<section class="inv-panel mission">
+      <h3>${m.title}</h3>
+      <p class="ngss-row">${m.ngss.map((k) => `<abbr class="ngss-tag" title="${NGSS[k]}">${k}</abbr>`).join(' ')} · <span class="muted">${m.pages}</span></p>
+      <p><strong>Goal:</strong> ${m.goal}</p>
+      <ol>${m.steps.map((x) => `<li>${x}</li>`).join('')}</ol>
+      <p><button type="button" class="btn" data-mission="${m.id}">${m.setup.scenario === 'compare' ? 'Load the comparison' : 'Load the starting tank'}</button></p>
+    </section>`).join('');
+  box.querySelectorAll('[data-mission]').forEach((b) => b.addEventListener('click', () => {
+    const m = MISSIONS.find((x) => x.id === b.dataset.mission);
+    writeBasic(m.setup);
+    selectTab($('#tab-lab'), true);
+    runBasic();
+    bform.querySelector('button[type=submit]').focus();
+  }));
+}
+renderMissions();
+
+/* ------------------------------------------------------------------ mode switch */
+let mode = 'basic';
+function setMode(m, { rerun = true } = {}) {
+  mode = m;
+  document.body.classList.toggle('mode-basic', m === 'basic');
+  document.body.classList.toggle('mode-advanced', m === 'advanced');
+  $('#mode-basic').setAttribute('aria-pressed', String(m === 'basic'));
+  $('#mode-advanced').setAttribute('aria-pressed', String(m === 'advanced'));
+  try { localStorage.setItem('gp-mode', m); } catch { /* storage unavailable */ }
+  if (rerun) (m === 'basic' ? runBasic : run)();
+}
+$('#mode-basic').addEventListener('click', () => setMode('basic'));
+$('#mode-advanced').addEventListener('click', () => setMode('advanced'));
+
 /* ------------------------------------------------------------------ start */
 writeSettings(defaultsFor('A'));
+writeBasic(BASIC_DEFAULTS);
+let saved = null;
+try { saved = localStorage.getItem('gp-mode'); } catch { /* ignore */ }
+const params = new URLSearchParams(location.search);
+setMode(params.get('mode') === 'advanced' || (!params.get('mode') && saved === 'advanced') ? 'advanced' : 'basic');
 const hash = location.hash.slice(1);
 const startTab = tabs.find((t) => t.id === 'tab-' + hash);
 if (startTab) selectTab(startTab);
-run();
